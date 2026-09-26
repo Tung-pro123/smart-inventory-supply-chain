@@ -20,7 +20,7 @@ In industrial manufacturing and smart warehouse ecosystems (e.g. Bosch Industria
 ### The Solution
 This platform addresses inventory tracking through an **Event-Sourced Architecture**:
 1. **Immutable Audit Trail**: Every stock movement (Inbound, Outbound, Cycle Count Adjustment, Damage write-off) is appended as an immutable event record.
-2. **Snapshot Projection Engine**: Real-time read snapshots are maintained atomically in the same database transaction to deliver sub-millisecond stock lookups ($O(1)$).
+2. **Snapshot Projection Engine**: Real-time read snapshots are maintained atomically in the same database transaction to deliver sub-millisecond stock lookups (O(1)).
 3. **Automated Defect & Low-Stock Alerts**: A background scheduled engine scans stock velocities and generates alerts before stockouts stall assembly lines.
 4. **Zero-Lag UI Virtualization**: Front-end renders tens of thousands of warehouse parts effortlessly using DOM virtualization.
 
