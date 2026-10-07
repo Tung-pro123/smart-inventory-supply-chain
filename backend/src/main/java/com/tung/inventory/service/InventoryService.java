@@ -17,6 +17,8 @@ import com.tung.inventory.repository.ProductRepository;
 import com.tung.inventory.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +73,13 @@ public class InventoryService {
                 request.getQuantity(), product.getSku(), warehouse.getCode(), username);
 
         return mapToEventResponse(event);
+    }
+
+    @Transactional
+    @CacheEvict(value = "inventory-snapshots", key = "#request.productId + '-' + #request.warehouseId")
+    public void evictInventorySnapshotCache(Long productId, Long warehouseId) {
+        // Method to manually evict cache when needed
+        log.debug("Evicting inventory snapshot cache for product {} warehouse {}", productId, warehouseId);
     }
 
     @Transactional
@@ -159,6 +168,7 @@ public class InventoryService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "inventory-snapshots", key = "#productId + '-' + #warehouseId")
     public InventorySnapshotResponse getSnapshot(Long productId, Long warehouseId) {
         InventorySnapshot snapshot = snapshotRepository
                 .findByProductIdAndWarehouseId(productId, warehouseId)
@@ -167,6 +177,7 @@ public class InventoryService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "low-stock")
     public List<InventorySnapshotResponse> getLowStockItems() {
         return snapshotRepository.findAllLowStock().stream()
                 .map(this::mapToSnapshotResponse)
@@ -174,6 +185,7 @@ public class InventoryService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "inventory-events", key = "#productId + '-' + #limit")
     public List<InventoryEventResponse> getEventHistory(Long productId, int limit) {
         return eventRepository.findByProductId(productId).stream()
                 .limit(limit)

@@ -10,6 +10,8 @@ import com.tung.inventory.repository.ProductRepository;
 import com.tung.inventory.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,27 +29,34 @@ public class WarehouseService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "warehouses", key = "'all'")
     public List<WarehouseResponse> getAllWarehouses() {
+        log.debug("Fetching all warehouses (cache miss)");
         return warehouseRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "warehouses", key = "#id")
     public WarehouseResponse getWarehouseById(Long id) {
+        log.debug("Fetching warehouse by id {} (cache miss)", id);
         Warehouse warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse", "id", id));
         return mapToResponse(warehouse);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "warehouses", key = "'code:' + #code")
     public WarehouseResponse getWarehouseByCode(String code) {
+        log.debug("Fetching warehouse by code {} (cache miss)", code);
         Warehouse warehouse = warehouseRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse", "code", code));
         return mapToResponse(warehouse);
     }
 
     @Transactional
+    @CacheEvict(value = "warehouses", allEntries = true)
     public WarehouseResponse createWarehouse(com.tung.inventory.dto.request.WarehouseRequest request) {
         if (warehouseRepository.existsByCode(request.getCode())) {
             throw new BusinessException("CODE_EXISTS", "Warehouse code already exists");
@@ -67,6 +76,7 @@ public class WarehouseService {
     }
 
     @Transactional
+    @CacheEvict(value = "warehouses", allEntries = true)
     public WarehouseResponse updateWarehouse(Long id, com.tung.inventory.dto.request.WarehouseRequest request) {
         Warehouse warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse", "id", id));
@@ -90,6 +100,7 @@ public class WarehouseService {
     }
 
     @Transactional
+    @CacheEvict(value = "warehouses", allEntries = true)
     public void deleteWarehouse(Long id) {
         if (!warehouseRepository.existsById(id)) {
             throw new ResourceNotFoundException("Warehouse", "id", id);

@@ -66,6 +66,9 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/v1/analytics/**").hasAnyRole("ADMIN", "WAREHOUSE_MANAGER")
 
+                // Cache management endpoints
+                .requestMatchers("/api/v1/cache/**").hasRole("ADMIN")
+
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
