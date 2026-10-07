@@ -204,18 +204,70 @@ npm run dev
 
 ## 🗺️ Project Milestones & Contribution Roadmap
 
-- [x] **Milestone 1: Architecture & Domain Modeling**
+- [x] **Milestone 1: Architecture & Domain Modeling** ✅
   - System architecture design, database schema design, and technical decision records.
-- [ ] **Milestone 2: Backend Core & Security Engine**
+- [x] **Milestone 2: Backend Core & Security Engine** ✅
   - Spring Boot 3 setup, Spring Security JWT filter chain, entity mapping & repositories.
-- [ ] **Milestone 3: Event Sourcing & Business Services**
+- [x] **Milestone 3: Event Sourcing & Business Services** ✅
   - Inbound/Outbound transactional handling, audit event logging, and concurrency locks.
-- [ ] **Milestone 4: Automated Testing**
-  - Service unit testing with Mockito (100% boundary testing on stock depletion).
-- [ ] **Milestone 5: React Frontend & DOM Virtualization**
+- [x] **Milestone 4: Automated Testing** ✅
+  - Service unit testing with Mockito (20 tests covering core inventory operations).
+- [ ] **Milestone 5: React Frontend & DOM Virtualization** 🔄
   - Vite setup, TanStack Query integration, `react-window` product catalog, and optimistic UI mutations.
-- [ ] **Milestone 6: Analytics Dashboard & Cloud Deployment**
+- [ ] **Milestone 6: Analytics Dashboard & Cloud Deployment** 📋
   - Trend velocity charts with Recharts, Docker packaging, and cloud deployment (Railway/Vercel).
+
+---
+
+## 📁 Project Structure
+
+```
+smart-inventory-supply-chain/
+├── backend/
+│   ├── src/main/java/com/tung/inventory/
+│   │   ├── config/           # Security, OpenAPI configs
+│   │   ├── controller/        # REST API endpoints
+│   │   ├── dto/               # Request/Response DTOs
+│   │   ├── entity/            # JPA Entities
+│   │   ├── exception/         # Custom exceptions & global handler
+│   │   ├── repository/       # Spring Data JPA repositories
+│   │   ├── scheduler/        # Background alert jobs
+│   │   ├── security/          # JWT filter & token provider
+│   │   └── service/           # Business logic services
+│   └── src/test/             # Unit & integration tests
+├── frontend/                  # React 18 + Vite (in progress)
+├── docker-compose.yml         # MySQL 8.0 container
+└── README.md
+```
+
+---
+
+## 🔐 Security Implementation
+
+- **JWT Bearer Token** authentication with 24h expiration
+- **RBAC** with 4 roles: ADMIN, WAREHOUSE_MANAGER, OPERATOR, VIEWER
+- **BCrypt** password hashing
+- **Optimistic Locking** for concurrent inventory updates
+- **CORS** configured for frontend development
+- **Swagger/OpenAPI** documentation at `/swagger-ui.html`
+
+---
+
+## 🧪 Test Coverage
+
+```
+Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+
+├── InventoryServiceTest (11 tests)
+│   ├── ProcessInboundTests (4 tests)
+│   ├── ProcessOutboundTests (3 tests)
+│   ├── GetSnapshotTests (2 tests)
+│   └── StockStatusTests (2 tests)
+├── AuthServiceTest (5 tests)
+│   ├── LoginTests (2 tests)
+│   └── RegisterTests (3 tests)
+└── AuthControllerTest (3 tests)
+```
 
 ---
 
